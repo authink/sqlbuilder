@@ -10,13 +10,17 @@ import (
 type Keyword interface {
 	fmt.Stringer
 	Select(...Field) *Builder
-	From(Table) *Builder
+	From(...Table) *Builder
 	Where(Condition) *Builder
 	And(Condition) *Builder
 }
 
 type Builder struct {
 	buf strings.Builder
+}
+
+func NewBuilder() *Builder {
+	return &Builder{}
 }
 
 func (b *Builder) Select(fields ...Field) *Builder {
@@ -32,9 +36,16 @@ func (b *Builder) Select(fields ...Field) *Builder {
 	return b
 }
 
-func (b *Builder) From(table Table) *Builder {
+func (b *Builder) From(tables ...Table) *Builder {
 	b.buf.WriteString(" FROM ")
-	b.buf.WriteString(table.String())
+	var i int
+	pie.Each(tables, func(table Table) {
+		b.buf.WriteString(table.String())
+		i++
+		if i < len(tables) {
+			b.buf.WriteRune(',')
+		}
+	})
 	return b
 }
 

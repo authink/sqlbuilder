@@ -5,18 +5,24 @@ import "fmt"
 type TableModifier interface {
 	fmt.Stringer
 	As(string) Table
+	Field(string) Field
 }
 
 type Table string
 
 // As implements Modifier.
-func (f Table) As(alias string) Table {
-	return Table(fmt.Sprintf("%s AS %s", f, alias))
+func (t Table) As(alias string) Table {
+	return Table(fmt.Sprintf("%s AS %s", t, alias))
 }
 
 // String implements Modifier.
-func (f Table) String() string {
-	return string(f)
+func (t Table) String() string {
+	return string(t)
+}
+
+// Field implements TableModifier.
+func (t Table) Field(name string) Field {
+	return Field(fmt.Sprintf("%s.%s", t, name))
 }
 
 var _ TableModifier = Table("")

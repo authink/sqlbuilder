@@ -7,12 +7,17 @@ type Condition interface {
 }
 
 type Equal struct {
-	field string
+	Left  Field
+	Right Field
 }
 
 // String implements Condition.
-func (e *Equal) String() string {
-	return fmt.Sprintf("%s = :%s", e.field, e.field)
+func (e Equal) String() string {
+	var right = e.Right
+	if right == "" {
+		right = e.Left.Named()
+	}
+	return fmt.Sprintf("%s = %s", e.Left, right)
 }
 
-var _ Condition = (*Equal)(nil)
+var _ Condition = Equal{}

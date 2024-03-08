@@ -6,9 +6,21 @@ type FieldModifier interface {
 	fmt.Stringer
 	Count() Field
 	As(string) Field
+	Of(string) Field
+	Named() Field
 }
 
 type Field string
+
+// Named implements FieldModifier.
+func (f Field) Named() Field {
+	return Field(fmt.Sprintf(":%s", f))
+}
+
+// Of implements FieldModifier.
+func (f Field) Of(tableAlias string) Field {
+	return Field(fmt.Sprintf("%s.%s", tableAlias, f))
+}
 
 // As implements FieldModifier.
 func (f Field) As(alias string) Field {
