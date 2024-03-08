@@ -18,6 +18,7 @@ type Keyword interface {
 	OrderBy(...Field) *Builder
 	Asc() *Builder
 	Desc() *Builder
+	Limit() *Builder
 	InsertInto(Table) *Builder
 	Columns(...Field) *Builder
 	Update(Table) *Builder
@@ -27,6 +28,12 @@ type Keyword interface {
 
 type Builder struct {
 	buf strings.Builder
+}
+
+// Limit implements Keyword.
+func (b *Builder) Limit() *Builder {
+	b.buf.WriteString(" LIMIT :limit OFFSET :offset")
+	return b
 }
 
 // DeleteFrom implements Keyword.
