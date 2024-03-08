@@ -13,10 +13,54 @@ type Keyword interface {
 	From(...Table) *Builder
 	Where(Condition) *Builder
 	And(Condition) *Builder
+	Or(Condition) *Builder
+	ForUpdate() *Builder
+	OrderBy(...Field) *Builder
+	Asc() *Builder
+	Desc() *Builder
 }
 
 type Builder struct {
 	buf strings.Builder
+}
+
+// ForUpdate implements Keyword.
+func (b *Builder) ForUpdate() *Builder {
+	b.buf.WriteString(" FOR UPDATE")
+	return b
+}
+
+// Asc implements Keyword.
+func (b *Builder) Asc() *Builder {
+	b.buf.WriteString(" ASC")
+	return b
+}
+
+// Desc implements Keyword.
+func (b *Builder) Desc() *Builder {
+	b.buf.WriteString(" DESC")
+	return b
+}
+
+// Or implements Keyword.
+func (b *Builder) Or(cond Condition) *Builder {
+	b.buf.WriteString(" OR ")
+	b.buf.WriteString(cond.String())
+	return b
+}
+
+// OrderBy implements Keyword.
+func (b *Builder) OrderBy(fields ...Field) *Builder {
+	b.buf.WriteString(" ORDER BY ")
+	var i int
+	pie.Each(fields, func(field Field) {
+		b.buf.WriteString(field.String())
+		i++
+		if i < len(fields) {
+			b.buf.WriteRune(',')
+		}
+	})
+	return b
 }
 
 func NewBuilder() *Builder {

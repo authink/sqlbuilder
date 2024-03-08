@@ -12,9 +12,10 @@ func TestSelect(t *testing.T) {
 		From("users").
 		Where(Equal{Left: "id"}).
 		And(Equal{Left: "name"}).
+		ForUpdate().
 		String()
 
-	assert.Equal(t, "SELECT id,name FROM users WHERE id = :id AND name = :name", sql)
+	assert.Equal(t, "SELECT id,name FROM users WHERE id = :id AND name = :name FOR UPDATE", sql)
 }
 
 func TestCount(t *testing.T) {
