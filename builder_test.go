@@ -69,3 +69,12 @@ func TestUpdate(t *testing.T) {
 
 	assert.Equal(t, "UPDATE users SET email = :email,name = :name WHERE id = :id", sql)
 }
+
+func TestDelete(t *testing.T) {
+	sql := NewBuilder().
+		DeleteFrom("users").
+		Where(Equal{Left: "id"}).
+		String()
+
+	assert.Equal(t, "DELETE FROM users WHERE id = :id", sql)
+}

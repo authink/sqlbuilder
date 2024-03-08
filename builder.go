@@ -22,10 +22,18 @@ type Keyword interface {
 	Columns(...Field) *Builder
 	Update(Table) *Builder
 	Set(...Field) *Builder
+	DeleteFrom(Table) *Builder
 }
 
 type Builder struct {
 	buf strings.Builder
+}
+
+// DeleteFrom implements Keyword.
+func (b *Builder) DeleteFrom(table Table) *Builder {
+	b.buf.WriteString("DELETE FROM ")
+	b.buf.WriteString(string(table))
+	return b
 }
 
 // Set implements Keyword.
