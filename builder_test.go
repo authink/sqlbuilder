@@ -19,7 +19,7 @@ func TestSelect(t *testing.T) {
 }
 
 func TestCount(t *testing.T) {
-	var tAlias = "u"
+	var tAlias = Table("u")
 	sql := NewBuilder().
 		Select(Field("id").Of(tAlias).Count().As("c")).
 		From(Table("users").As(tAlias)).
@@ -30,8 +30,8 @@ func TestCount(t *testing.T) {
 
 func TestMultiTables(t *testing.T) {
 	var (
-		tAlias1 = "u"
-		tAlias2 = "a"
+		tAlias1 = Table("u")
+		tAlias2 = Table("a")
 	)
 	sql := NewBuilder().
 		Select(

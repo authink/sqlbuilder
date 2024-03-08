@@ -4,14 +4,14 @@ import "fmt"
 
 type TableModifier interface {
 	fmt.Stringer
-	As(string) Table
+	As(Table) Table
 	Field(string) Field
 }
 
 type Table string
 
 // As implements Modifier.
-func (t Table) As(alias string) Table {
+func (t Table) As(alias Table) Table {
 	return Table(fmt.Sprintf("%s AS %s", t, alias))
 }
 

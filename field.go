@@ -5,8 +5,8 @@ import "fmt"
 type FieldModifier interface {
 	fmt.Stringer
 	Count() Field
-	As(string) Field
-	Of(string) Field
+	As(Field) Field
+	Of(Table) Field
 	Named() Field
 	Assign() Field
 }
@@ -24,12 +24,12 @@ func (f Field) Named() Field {
 }
 
 // Of implements FieldModifier.
-func (f Field) Of(tableAlias string) Field {
-	return Field(fmt.Sprintf("%s.%s", tableAlias, f))
+func (f Field) Of(alias Table) Field {
+	return Field(fmt.Sprintf("%s.%s", alias, f))
 }
 
 // As implements FieldModifier.
-func (f Field) As(alias string) Field {
+func (f Field) As(alias Field) Field {
 	return Field(fmt.Sprintf("%s AS %s", f, alias))
 }
 
