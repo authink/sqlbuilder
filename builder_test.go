@@ -50,3 +50,12 @@ func TestMultiTables(t *testing.T) {
 
 	assert.Equal(t, "SELECT u.id,a.name AS app_name FROM users AS u,apps AS a WHERE u.id = a.app_id", sql)
 }
+
+func TestInsert(t *testing.T) {
+	sql := NewBuilder().
+	InsertInto("users").
+	Columns("id", "name").
+	String()
+
+	assert.Equal(t, "INSERT INTO users(id,name) VALUES(:id,:name)", sql)
+}

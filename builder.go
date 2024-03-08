@@ -18,10 +18,36 @@ type Keyword interface {
 	OrderBy(...Field) *Builder
 	Asc() *Builder
 	Desc() *Builder
+
+	InsertInto(Table) *Builder
+	Columns(...Field) *Builder
 }
 
 type Builder struct {
 	buf strings.Builder
+}
+
+// Columns implements Keyword.
+func (b *Builder) Columns(fields ...Field) *Builder {
+	b.buf.WriteString("(")
+	writeFields(&b.buf, fields)
+	b.buf.WriteRune(')')
+
+	var namedFields []Field
+	pie.Each(fields, func(field Field) {
+		namedFields = append(namedFields, field.Named())
+	})
+	b.buf.WriteString(" VALUES(")
+	writeFields(&b.buf, namedFields)
+	b.buf.WriteRune(')')
+	return b
+}
+
+// InsertInto implements Keyword.
+func (b *Builder) InsertInto(table Table) *Builder {
+	b.buf.WriteString("INSERT INTO ")
+	b.buf.WriteString(string(table))
+	return b
 }
 
 // ForUpdate implements Keyword.
@@ -52,14 +78,7 @@ func (b *Builder) Or(cond Condition) *Builder {
 // OrderBy implements Keyword.
 func (b *Builder) OrderBy(fields ...Field) *Builder {
 	b.buf.WriteString(" ORDER BY ")
-	var i int
-	pie.Each(fields, func(field Field) {
-		b.buf.WriteString(field.String())
-		i++
-		if i < len(fields) {
-			b.buf.WriteRune(',')
-		}
-	})
+	writeFields(&b.buf, fields)
 	return b
 }
 
@@ -69,27 +88,13 @@ func NewBuilder() *Builder {
 
 func (b *Builder) Select(fields ...Field) *Builder {
 	b.buf.WriteString("SELECT ")
-	var i int
-	pie.Each(fields, func(field Field) {
-		b.buf.WriteString(field.String())
-		i++
-		if i < len(fields) {
-			b.buf.WriteRune(',')
-		}
-	})
+	writeFields(&b.buf, fields)
 	return b
 }
 
 func (b *Builder) From(tables ...Table) *Builder {
 	b.buf.WriteString(" FROM ")
-	var i int
-	pie.Each(tables, func(table Table) {
-		b.buf.WriteString(table.String())
-		i++
-		if i < len(tables) {
-			b.buf.WriteRune(',')
-		}
-	})
+	writeTables(&b.buf, tables)
 	return b
 }
 
