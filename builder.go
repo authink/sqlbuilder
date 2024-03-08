@@ -18,13 +18,33 @@ type Keyword interface {
 	OrderBy(...Field) *Builder
 	Asc() *Builder
 	Desc() *Builder
-
 	InsertInto(Table) *Builder
 	Columns(...Field) *Builder
+	Update(Table) *Builder
+	Set(...Field) *Builder
 }
 
 type Builder struct {
 	buf strings.Builder
+}
+
+// Set implements Keyword.
+func (b *Builder) Set(fields ...Field) *Builder {
+	var assignFields []Field
+	pie.Each(fields, func(field Field) {
+		assignFields = append(assignFields, field.Assign())
+	})
+
+	b.buf.WriteString(" SET ")
+	writeFields(&b.buf, assignFields)
+	return b
+}
+
+// Update implements Keyword.
+func (b *Builder) Update(table Table) *Builder {
+	b.buf.WriteString("UPDATE ")
+	b.buf.WriteString(string(table))
+	return b
 }
 
 // Columns implements Keyword.

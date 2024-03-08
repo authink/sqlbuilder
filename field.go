@@ -8,9 +8,15 @@ type FieldModifier interface {
 	As(string) Field
 	Of(string) Field
 	Named() Field
+	Assign() Field
 }
 
 type Field string
+
+// Assign implements FieldModifier.
+func (f Field) Assign() Field {
+	return Field(fmt.Sprintf("%s = %s", f, f.Named()))
+}
 
 // Named implements FieldModifier.
 func (f Field) Named() Field {

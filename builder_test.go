@@ -53,9 +53,19 @@ func TestMultiTables(t *testing.T) {
 
 func TestInsert(t *testing.T) {
 	sql := NewBuilder().
-	InsertInto("users").
-	Columns("id", "name").
-	String()
+		InsertInto("users").
+		Columns("id", "name").
+		String()
 
 	assert.Equal(t, "INSERT INTO users(id,name) VALUES(:id,:name)", sql)
+}
+
+func TestUpdate(t *testing.T) {
+	sql := NewBuilder().
+		Update("users").
+		Set("email", "name").
+		Where(Equal{Left: "id"}).
+		String()
+
+	assert.Equal(t, "UPDATE users SET email = :email,name = :name WHERE id = :id", sql)
 }
