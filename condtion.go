@@ -21,3 +21,25 @@ func (e Equal) String() string {
 }
 
 var _ Condition = Equal{}
+
+type True struct {
+	Left Field
+}
+
+// String implements Condition.
+func (t True) String() string {
+	return fmt.Sprintf("%s = 1", t.Left)
+}
+
+var _ Condition = True{}
+
+type False struct {
+	Left Field
+}
+
+// String implements Condition.
+func (f False) String() string {
+	return fmt.Sprintf("%s = 0", f.Left)
+}
+
+var _ Condition = False{}
